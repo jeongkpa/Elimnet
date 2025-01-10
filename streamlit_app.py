@@ -122,7 +122,7 @@ def show_product_release_form():
     # 7. 주요 특징(세일즈 포인트)
     innovation = st.text_area(
         "7. **주요 특징(세일즈 포인트)** *",
-        placeholder="예시)  \n27인치에 적합한 해상도인 QHD(2560*1440) 해상도\n- 광시야각 SS IPS\n- 180Hz의 고주사율\n- 응답속도 1ms(MPRT)\n- G-싱크 및 프리싱크 호환\n- DCI-P3 95%의 색재현율\n- 10비트 컬러, VESA HDR 400 지원\n- KVM스위치 내장\n- 3년 무상의 A/S 보증 서비스",
+        placeholder="예시)  \n- 27인치에 적합한 해상도인 QHD(2560*1440) 해상도\n- 광시야각 SS IPS\n- 180Hz의 고주사율\n- 응답속도 1ms(MPRT)\n- G-싱크 및 프리싱크 호환\n- DCI-P3 95%의 색재현율\n- 10비트 컬러, VESA HDR 400 지원\n- KVM스위치 내장\n- 3년 무상의 A/S 보증 서비스",
         height=100
     )
     
@@ -136,7 +136,7 @@ def show_product_release_form():
     # 9. 세부 스펙 및 성능
     specs = st.text_area(
         "9. 세부 스펙 및 성능",
-        placeholder="예시)\n- KVM스위치가 내장되어 있어 모니터의 USB 포트에 마우스와 키보드를 연결한 상태에서 DP-ALT 모드를 지원하는 USB-C케이블로 다른 장치와 연결할 경우, 별도의 키보드와 마우스를 준비할 필요 없이 쓰던 장비를 그대로 다른 장치에서도 사용\n- 게임 편의 기능인 'Game Assist' 제공\n- 오랜 시간 편안한 게이밍을 위한 로우 블루라이트, 플리커 프리 기술 제공",
+        placeholder="예시)\n- 게임 편의 기능인 'Game Assist' 제공\n- 오랜 시간 편안한 게이밍을 위한 로우 블루라이트, 플리커 프리 기술 제공",
         height=120
     )
     
