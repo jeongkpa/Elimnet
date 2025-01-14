@@ -1,57 +1,81 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta http-equiv="Content-Language" content="ko">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>{{ title }}</title>
-</head>
-<body>
-    <meta name="press release" content="">
-    <div align="center">
-        <table class="MsoNormalTable" style="font-family: 맑은 고딕" cellPadding="0" width="550" border="0">
-            <tr>
-                <td style="padding: 0.75pt" width="550" align="left">
-                    <font size="2">
-                    안녕하십니까?<br>
-                    OOOOOO(주) OOO팀 OOO입니다.<br>
-                    <br>
-					당사에서 ~~~~~~~ 했습니다.<br>
-					<br>
-					이에 보도자료를 송부드리니, 아래 본문을 참고하여 주시길 바랍니다.<br>
-					<br>
-					감사합니다.</font><p><b><font size="2"><font color="#FF0000">* 
-					보도자료 관련 이미지 : </font> 
-					<font color="#0000FF">[다운로드]</font></font></b></p>
-					<p>
-					<span style="font-family: '맑은 고딕'">
-                        <font size="2">
-                        . 제품문의 : OOO 매니저<br>
-                        . Tel : 02-000-0000<br>
-                        . MP : 010-0000-0000<br>
-                        . e-mail : xxx@도메인</font></span></p>
-					<div class="MsoNormal" style="text-align: center" align="center">
-                        <hr align="center" SIZE="2" width="100%">
-                    </div>
+from jinja2 import Environment, FileSystemLoader, Template
+import os
 
-                    <p><font size="2">
-                    <!-- 본문 (사용자 입력 내용) -->
-                    </font>
-                    <font size="2" style="font-family: '맑은 고딕';">
-                        {{ body_content|safe }}</font></p>
-					<div class="MsoNormal">
-                        <p>
-                        <style="font-size: 10pt; font-family: 맑은 고딕">
-						<font size="2">* 공식유통사 - 제이씨현시스템(주) 1577-3367 :
-						<a style="color: #0000FF; text-decoration: underline" target="_blank" href="http://www.jchyun.com">
-						www.jchyun.com</a><br>
-						* 고객지원 사이트 :
-						<a style="text-decoration: underline; color: #0000FF" target="_blank" href="https://www.csinnovation.co.kr">
-						www.csinnovation.co.kr</a></span></font></p>
-                        <hr align="center" SIZE="2" width="100%">
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-</body>
-</html> 
+def convert_text_to_html(text: str, title: str = "") -> str:
+    """일반 텍스트를 HTML 형식으로 변환합니다."""
+    # 기본 스타일 정의
+    base_style = 'style="font-size: 10pt; font-family: 맑은 고딕; font-style: normal; font-variant-ligatures: normal; ' \
+                'font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; ' \
+                'text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; ' \
+                'white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; ' \
+                'text-decoration-color: initial; color: rgb(51, 51, 51)"'
+    
+    # 제목 스타일 정의
+    title_style = 'style="font-size: 12px; font-family: 맑은 고딕; font-style: normal; font-variant-ligatures: normal; ' \
+                 'font-variant-caps: normal; font-weight: bold; letter-spacing: normal; orphans: 2; text-align: center; ' \
+                 'text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; ' \
+                 'white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; ' \
+                 'text-decoration-color: initial; color: #0033CC"'
+    
+    # 제목 처리
+    result = []
+    if title:
+        result.append(f'<span {title_style}>{title}</span><br>\n<br>\n')
+    
+    # 줄바꿈을 <br>과 들여쓰기로 변환
+    paragraphs = text.split('\n\n')  # 빈 줄로 문단 구분
+    
+    formatted_paragraphs = []
+    for p in paragraphs:
+        # 각 줄을 <br>로 연결
+        lines = p.split('\n')
+        formatted_lines = []
+        for line in lines:
+            if line.strip():  # 빈 줄이 아닌 경우
+                # 들여쓰기가 필요한 경우 &nbsp; 추가
+                if line.startswith(' '):
+                    line = '&nbsp;' * (len(line) - len(line.lstrip())) + line.lstrip()
+                
+                # 모든 텍스트에 기본 스타일 적용
+                formatted_lines.append(f'<span lang="EN-US" {base_style}>{line}</span><br>\n')
+        
+        # 문단을 합치기
+        if formatted_lines:
+            paragraph = ''.join(formatted_lines)
+            formatted_paragraphs.append(paragraph)
+            # 문단 사이에 빈 줄 추가
+            formatted_paragraphs.append('<br>\n')
+    
+    # 모든 문단을 합치고 마지막 빈 줄 제거
+    result.extend(formatted_paragraphs)
+    final_result = ''.join(result)
+    if final_result.endswith('<br>\n'):
+        final_result = final_result[:-5]
+    
+    return final_result
+
+def generate_press_release_html(title: str, body_text: str) -> str:
+    """
+    - title: 문서의 <title> 태그 및 제목 표시용
+    - body_text: 보도자료 본문(HTML 태그 포함 가능)
+    return: 최종적으로 합쳐진 HTML 문자열
+    """
+    # 템플릿 로더 설정 (현재 디렉토리 기준 templates 폴더)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    templates_dir = os.path.join(current_dir, 'templates')
+
+    env = Environment(loader=FileSystemLoader(templates_dir))
+
+    # press_release_template.html 읽기
+    template = env.get_template('press_release_template.html')
+
+    # 일반 텍스트를 HTML로 변환 (title 포함)
+    body_html = convert_text_to_html(body_text, title)
+    
+    # 템플릿 렌더링
+    rendered_html = template.render(
+        title=title,
+        body_content=body_html
+    )
+
+    return rendered_html 
